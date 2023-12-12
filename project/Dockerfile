@@ -10,12 +10,18 @@ ENV PYTHONUNBUFFERED 1
 
 # install system dependencies
 RUN apt-get update \
-    && apt-get -y installnetcat gcc \
-    &&apt-get clean
+    && apt-get -y upgrade \
+    && apt-get -y install netcat gcc \
+    && apt-get clean
 
 COPY ./requirements.txt .
-RUN pip install --upgrade \
+COPY ./entrypoint.sh .
+RUN chmod +x /usr/src/app/entrypoint.sh \
+    && pip install --upgrade pip \
     && pip install -r requirements.txt
 
 #add app
 COPY . .
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
